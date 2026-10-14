@@ -1,0 +1,13 @@
+.Link {
+    display: flex;
+    padding: 10px;
+    margin: 10px;
+}
+
+.nav {
+    display: flex;
+    justify-content: center;
+    background-color: brown;
+    padding: 10px;
+    margin: 0;
+}

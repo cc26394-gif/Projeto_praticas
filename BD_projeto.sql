@@ -23,7 +23,7 @@ create table status_reserva(
 	status varchar(30) not null unique
 )
 INSERT INTO status_reserva (status)
-VALUES ('Livre'), ('Ocupado'), ('Bloqueado'), ('Reservado');
+VALUES ('Livre'), ('Ocupado'), ('Em manutenção'), ('Reservado');
 
 
 create table recurso(

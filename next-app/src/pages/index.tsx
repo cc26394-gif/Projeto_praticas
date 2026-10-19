@@ -1,5 +1,5 @@
 
-import Cabecalho from "./components/Cabecalho";
+import Cabecalho from "../components/Cabecalho";
 
 export default function index(){
   return(

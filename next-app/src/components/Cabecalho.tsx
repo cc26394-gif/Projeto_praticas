@@ -4,10 +4,10 @@ export default function Cabecalho() {
     return (
         <div>
             <nav className={style.nav}>
-                <Link href="/perfil" className={style.Link}>perfil</Link>
-                <Link href="/recursos" className={style.Link}>Aréa de recursos</Link>
-                <Link href="/sobre" className={style.Link}>sobre nós</Link>
-                <Link href="/ajuda" className={style.Link}>ajuda</Link>
+                <Link href="/" className={style.Link}>Inicio</Link>
+                <Link href="/recursos" className={style.Link}>Área de reservas</Link>
+                <Link href="/consultasDeReservas" className={style.Link}>Consultar reservas</Link>
+
             </nav>
         </div>
     )

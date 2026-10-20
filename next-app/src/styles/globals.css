@@ -22,7 +22,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: darkmagenta;
+    background-color: rgb(206, 205, 206);
 }
 
 * {

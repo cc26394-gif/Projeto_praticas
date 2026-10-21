@@ -15,12 +15,8 @@ export default function Cabecalho() {
                     Consultar reservas
                 </Link>
 
-                <Link href="/login" className={style.Link}>
-                    Login
-                </Link>
-
-                <Link href="/cadastro" className={style.Link}>
-                    Cadastro
+                <Link href="/perfil" className={style.Link}>
+                    perfil
                 </Link>
             </nav>
         </div>

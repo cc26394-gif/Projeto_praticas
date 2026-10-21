@@ -48,7 +48,7 @@ export default function Login() {
 
             setMensagem("Login realizado com sucesso!");
 
-            router.push("/recursos");
+            router.push("/inicio");
 
         } catch {
             setMensagem(
@@ -91,7 +91,7 @@ export default function Login() {
 
                 <br />
                 <div>
-                    <h4>sem login?<Link href="/">clique aqui</Link></h4>
+                    <h4>sem login?<Link href="/cadastro">clique aqui</Link></h4>
                 </div>
               
                 <br />

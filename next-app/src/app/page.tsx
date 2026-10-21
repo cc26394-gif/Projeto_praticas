@@ -1,12 +1,11 @@
 
-import Cabecalho from "../components/Cabecalho";
+import Login from "./login/page";
 
 export default function page(){
   return(
     <>
-      <Cabecalho/>
       <main>
-          <h2>Sistema para realizar e consultar reservas de laboratórios e salas.</h2>
+          <Login/>
       </main>
     </>
     )

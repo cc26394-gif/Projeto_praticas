@@ -1,7 +1,9 @@
 "use client";
 
+import style from "../../styles/login.module.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Login() {
     const [login, setLogin] = useState("");
@@ -58,12 +60,12 @@ export default function Login() {
     }
 
     return (
-        <main>
+        <main className={style.main}>
             <h1>Login</h1>
 
             <form onSubmit={entrar}>
-                <label htmlFor="login">Login:</label>
-                <br />
+               
+                <div> <label htmlFor="login">Login:</label></div>
 
                 <input
                     id="login"
@@ -88,9 +90,13 @@ export default function Login() {
                 />
 
                 <br />
+                <div>
+                    <h4>sem login?<Link href="/">clique aqui</Link></h4>
+                </div>
+              
                 <br />
 
-                <button type="submit" disabled={carregando}>
+                <button type="submit" disabled={carregando} className={style.button}>
                     {carregando ? "Entrando..." : "Entrar"}
                 </button>
             </form>

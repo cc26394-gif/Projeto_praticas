@@ -1,0 +1,46 @@
+.container {
+    width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+}
+
+.titulo {
+    text-align: center;
+}
+
+.recurso {
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #dbeafe;
+    border-radius: 10px;
+}
+
+.recurso h2 {
+    margin-top: 0;
+}
+
+.formulario {
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.formulario form {
+    display: flex;
+    flex-direction: column;
+}
+
+.formulario input {
+    padding: 8px;
+    margin: 5px 0 15px;
+}
+
+.formulario button {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.mensagem {
+    margin-top: 20px;
+}

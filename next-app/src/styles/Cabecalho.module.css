@@ -7,7 +7,7 @@
 .nav {
     display: flex;
     justify-content: center;
-    background-color: brown;
+    background-color: rgb(59, 106, 215);
     border-radius: 5px;
     padding: 10px;
     margin: 0;

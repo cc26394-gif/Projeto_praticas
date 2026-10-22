@@ -1,5 +1,5 @@
-
 import Link from "next/link";
+import style from "../../styles/recursos.module.css";
 
 interface DadosDosRecursos {
     codigo: number;
@@ -10,45 +10,59 @@ interface DadosDosRecursos {
 }
 
 export default async function Recursos() {
+
     const response = await fetch("http://localhost:8080/recurso");
 
     const dados: DadosDosRecursos[] = await response.json();
 
     return (
-        <>
-            <h1>Área de Recursos</h1>
+        <main className={style.container}>
 
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>codigo</th>
-                            <th>Nome</th>
-                            <th>tipo</th>
-                            <th>capacidade</th>
-                            <th>localidade</th>
-                            <th>reserva</th>
-                        </tr>
-                    </thead>
+            <h1 className={style.titulo}>
+                Recursos disponíveis
+            </h1>
 
-                    <tbody>
-                        {dados.map((recurso) => (
-                            <tr key={recurso.codigo}>
-                                <td>{recurso.codigo}</td>
-                                <td>{recurso.nome}</td>
-                                <td>{recurso.tipo}</td>
-                                <td>{recurso.capacidade}</td>
-                                <td>{recurso.localidade}</td>
-                                <td>
-                                    <Link href={`/reserva/${recurso.codigo}`}>
-                                        reserva
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className={style.lista}>
+
+                {dados.map((recurso) => (
+
+                    <div
+                        className={style.recurso}
+                        key={recurso.codigo}
+                    >
+
+                        <h2>{recurso.nome}</h2>
+
+                        <p>
+                            <strong>Tipo:</strong>{" "}
+                            {recurso.tipo === "S"
+                                ? "Sala"
+                                : "Laboratório"}
+                        </p>
+
+                        <p>
+                            <strong>Capacidade:</strong>{" "}
+                            {recurso.capacidade} pessoas
+                        </p>
+
+                        <p>
+                            <strong>Local:</strong>{" "}
+                            {recurso.localidade}
+                        </p>
+
+                        <Link
+                            className={style.botao}
+                            href={`/reserva/${recurso.codigo}`}
+                        >
+                            Reservar
+                        </Link>
+
+                    </div>
+
+                ))}
+
             </div>
-        </>
+
+        </main>
     );
 }

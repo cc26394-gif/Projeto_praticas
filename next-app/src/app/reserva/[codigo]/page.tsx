@@ -1,20 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import style from "../../../styles/reserva.module.css";
+
+interface Recurso {
+    codigo: number;
+    nome: string;
+    tipo: string;
+    capacidade: number;
+    localidade: string;
+}
 
 export default function Reserva() {
 
     const params = useParams<{ codigo: string }>();
-    const codigo = params?.codigo;
+    const codigo = params.codigo;
 
-    const [usuarioId, setUsuarioId] = useState("");
+    const [recurso, setRecurso] = useState<Recurso | null>(null);
+
     const [dataInicial, setDataInicial] = useState("");
     const [dataFinal, setDataFinal] = useState("");
     const [mensagem, setMensagem] = useState("");
 
+    useEffect(() => {
+
+        async function buscarRecurso() {
+
+            const resposta = await fetch(
+                `http://localhost:8080/recurso/${codigo}`
+            );
+
+            const dados = await resposta.json();
+
+            setRecurso(dados[0]);
+        }
+
+        buscarRecurso();
+
+    }, [codigo]);
+
     async function reservar(event: React.FormEvent) {
+
         event.preventDefault();
+
+        const usuarioId = localStorage.getItem("usuario_id");
+
+        if (!usuarioId) {
+            setMensagem("Você precisa estar logado.");
+            return;
+        }
 
         if (dataFinal <= dataInicial) {
             setMensagem("A data final deve ser depois da data inicial.");
@@ -23,9 +58,11 @@ export default function Reserva() {
 
         const resposta = await fetch("http://localhost:8080/reserva", {
             method: "POST",
+
             headers: {
                 "Content-Type": "application/json"
             },
+
             body: JSON.stringify({
                 recurso_cod: Number(codigo),
                 usuario_id: Number(usuarioId),
@@ -45,51 +82,81 @@ export default function Reserva() {
     }
 
     return (
-        <>
-            <h1>Reserva do recurso {codigo}</h1>
+        <main className={style.container}>
 
-            <form onSubmit={reservar}>
+            <h1 className={style.titulo}>
+                Reserva
+            </h1>
 
-                <label>Usuário:</label>
+            {recurso && (
+                <div className={style.recurso}>
 
-                <input
-                    type="number"
-                    value={usuarioId}
-                    onChange={(event) => setUsuarioId(event.target.value)}
-                    required
-                />
+                    <h2>{recurso.nome}</h2>
 
-                <br />
+                    <p>
+                        <strong>Código:</strong> {recurso.codigo}
+                    </p>
 
-                <label>Data inicial:</label>
+                    <p>
+                        <strong>Tipo:</strong>{" "}
+                        {recurso.tipo === "S"
+                            ? "Sala"
+                            : "Laboratório"}
+                    </p>
 
-                <input
-                    type="datetime-local"
-                    value={dataInicial}
-                    onChange={(event) => setDataInicial(event.target.value)}
-                    required
-                />
+                    <p>
+                        <strong>Capacidade:</strong>{" "}
+                        {recurso.capacidade} pessoas
+                    </p>
 
-                <br />
+                    <p>
+                        <strong>Local:</strong>{" "}
+                        {recurso.localidade}
+                    </p>
 
-                <label>Data final:</label>
+                </div>
+            )}
 
-                <input
-                    type="datetime-local"
-                    value={dataFinal}
-                    onChange={(event) => setDataFinal(event.target.value)}
-                    required
-                />
+            <div className={style.formulario}>
 
-                <br />
+                <h2>Escolha o período</h2>
 
-                <button type="submit">
-                    Reservar
-                </button>
+                <form onSubmit={reservar}>
 
-            </form>
+                    <label>Data inicial:</label>
 
-            <p>{mensagem}</p>
-        </>
+                    <input
+                        type="datetime-local"
+                        value={dataInicial}
+                        onChange={(event) =>
+                            setDataInicial(event.target.value)
+                        }
+                        required
+                    />
+
+                    <label>Data final:</label>
+
+                    <input
+                        type="datetime-local"
+                        value={dataFinal}
+                        onChange={(event) =>
+                            setDataFinal(event.target.value)
+                        }
+                        required
+                    />
+
+                    <button type="submit">
+                        Confirmar reserva
+                    </button>
+
+                </form>
+
+                <p className={style.mensagem}>
+                    {mensagem}
+                </p>
+
+            </div>
+
+        </main>
     );
 }

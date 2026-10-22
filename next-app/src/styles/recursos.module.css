@@ -1,0 +1,44 @@
+.container {
+    width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.titulo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.recurso {
+    padding: 20px;
+    background-color: #dbeafe;
+    border-radius: 10px;
+}
+
+.recurso h2 {
+    margin-top: 0;
+}
+
+.recurso p {
+    margin: 8px 0;
+}
+
+.botao {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.botao:hover {
+    background-color: #1d4ed8;
+}

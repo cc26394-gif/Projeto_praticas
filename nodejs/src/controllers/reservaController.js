@@ -50,6 +50,17 @@ class reservaController {
             res.status(500).json({ message: `${erro.message} - falha na requisição` });
         }
     }
+    static async listarPorUsuario(req, res) {
+        const nome = (req.query.nome ?? "").toString().trim();
+        try {
+            const lista = await Reserva.buscarPorUsuario(nome);
+            res.status(200).json(lista);
+        } catch (erro) {
+            res.status(500).json({ message: `${erro.message} - falha na requisição` });
+        }
+    }
+
 }
+
 
 export default reservaController;

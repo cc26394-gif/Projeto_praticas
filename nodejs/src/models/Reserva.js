@@ -173,6 +173,39 @@ class Reserva {
             );
         }
     }
+    static async buscarPorUsuario(nome) {
+        try {
+            const conexao = await conectaBD();
+
+            const result = await conexao
+                .request()
+                .input("nome", nome)
+                .query(`
+                    SELECT
+                        r.id,
+                        rc.codigo AS recurso_codigo,
+                        rc.nome   AS recurso_nome,
+                        u.nome    AS usuario,
+                        s.status,
+                        r.data_inicial,
+                        r.data_final
+                    FROM reserva r
+                    JOIN cadastro_usuario u ON u.id = r.usuario_id
+                    JOIN recurso rc         ON rc.codigo = r.recurso_cod
+                    JOIN status_reserva s   ON s.codigo = r.status_cod
+                    WHERE @nome = ''
+                       OR u.nome COLLATE Latin1_General_CI_AI LIKE '%' + @nome + '%'
+                    ORDER BY u.nome, r.data_inicial DESC
+                `);
+
+            return result.recordset;
+
+        } catch (error) {
+            throw new Error(
+                `Erro na consulta ao banco de dados: ${error.message}`
+            );
+        }
+    }    
 }
 
 export default Reserva;

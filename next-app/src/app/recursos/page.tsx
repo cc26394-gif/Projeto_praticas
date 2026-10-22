@@ -1,5 +1,6 @@
 import Link from "next/link";
 import style from "../../styles/recursos.module.css";
+import Cabecalho from "@/components/Cabecalho";
 
 interface DadosDosRecursos {
     codigo: number;
@@ -10,59 +11,42 @@ interface DadosDosRecursos {
 }
 
 export default async function Recursos() {
-
     const response = await fetch("http://localhost:8080/recurso");
-
     const dados: DadosDosRecursos[] = await response.json();
 
     return (
-        <main className={style.container}>
+        <>
+            <Cabecalho />
 
-            <h1 className={style.titulo}>
-                Recursos disponíveis
-            </h1>
+            <main className={style.container}>
+                <h1 className={style.titulo}>Recursos disponíveis</h1>
 
-            <div className={style.lista}>
+                <div className={style.lista}>
+                    {dados.map((recurso) => (
+                        <div className={style.recurso} key={recurso.codigo}>
+                            <h2>{recurso.nome}</h2>
 
-                {dados.map((recurso) => (
+                            <p>
+                                <strong>Tipo:</strong>{" "}
+                                {recurso.tipo === "S" ? "Sala" : "Laboratório"}
+                            </p>
 
-                    <div
-                        className={style.recurso}
-                        key={recurso.codigo}
-                    >
+                            <p>
+                                <strong>Capacidade:</strong>{" "}
+                                {recurso.capacidade} pessoas
+                            </p>
 
-                        <h2>{recurso.nome}</h2>
+                            <p>
+                                <strong>Local:</strong> {recurso.localidade}
+                            </p>
 
-                        <p>
-                            <strong>Tipo:</strong>{" "}
-                            {recurso.tipo === "S"
-                                ? "Sala"
-                                : "Laboratório"}
-                        </p>
-
-                        <p>
-                            <strong>Capacidade:</strong>{" "}
-                            {recurso.capacidade} pessoas
-                        </p>
-
-                        <p>
-                            <strong>Local:</strong>{" "}
-                            {recurso.localidade}
-                        </p>
-
-                        <Link
-                            className={style.botao}
-                            href={`/reserva/${recurso.codigo}`}
-                        >
-                            Reservar
-                        </Link>
-
-                    </div>
-
-                ))}
-
-            </div>
-
-        </main>
+                            <Link className={style.botao} href={`/reserva/${recurso.codigo}`}>
+                                Reservar
+                            </Link>
+                        </div>
+                    ))}
+                </div>
+            </main>
+        </>
     );
 }

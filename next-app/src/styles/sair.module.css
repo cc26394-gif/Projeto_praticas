@@ -1,0 +1,49 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f1f5f9;
+}
+
+.card {
+    width: 400px;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.card h1 {
+    margin-bottom: 25px;
+    color: #1e293b;
+    font-size: 24px;
+}
+
+.botao {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.sair {
+    background-color: #dc2626;
+    color: white;
+}
+
+.sair:hover {
+    background-color: #b91c1c;
+}
+
+.cancelar {
+    background-color: #64748b;
+    color: white;
+}
+
+.cancelar:hover {
+    background-color: #475569;
+}

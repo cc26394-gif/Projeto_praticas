@@ -1,13 +1,13 @@
 "user client";
 import Link from "next/link";
-import style from "../styles/menudeopcoes.module.css"
+import style from "../../styles/menudeopcoes.module.css";
 import {useState, useRef, useEffect} from "react";
 
 const opcoes=[
     { texto:"por recurso",href:""},
     { texto:"",href:""},
     { texto:"",href:""}
-]
+]   
 
 export default function menudeopcoes(){
     const [aberto, setAberto] = useState(false)

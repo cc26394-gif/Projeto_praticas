@@ -1,0 +1,38 @@
+.button{
+    display: flex;
+    padding: 10px;
+    margin: 10px;
+    font-size: 22px;
+    background-color: rgb(59, 106, 215);
+    border:none;
+    border-color: black;
+}
+.lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  margin: 10px;
+  padding: 10px ;
+  list-style: none;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+}
+.item {
+  display: block;
+  padding: 10px 20px;
+  color: #111827;
+  text-decoration: none;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+.item:hover{
+    background-color: darkgreen;
+}
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}

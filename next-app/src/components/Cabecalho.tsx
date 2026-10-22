@@ -1,6 +1,6 @@
 import Link from "next/link";
 import style from "../styles/Cabecalho.module.css";
-
+import Menudeopcoes from "./menudeopcoes";
 export default function Cabecalho() {
     return (
         <div>
@@ -11,9 +11,7 @@ export default function Cabecalho() {
                     Sistema de Reserva
                 </Link>
 
-                <Link href="/consultasDeReservas" className={style.Link}>
-                    Consultar Reservas
-                </Link>
+                <Menudeopcoes/>
 
                 <Link href="/sair" className={style.Link}>
                     Sair do login

@@ -1,0 +1,165 @@
+.pagina {
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.titulo {
+  margin: 0 0 4px;
+  font-size: 2rem;
+  color: #111827;
+}
+
+.subtitulo {
+  margin: 0 0 24px;
+  color: #6b7280;
+}
+
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  margin-bottom: 28px;
+  padding: 16px;
+  background: #f3f4f6;
+  border-radius: 10px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.campo input,
+.campo select {
+  min-width: 200px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 16px;
+  font-weight: 400;
+  color: #111827;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: 2px solid rgb(59, 106, 215);
+  outline-offset: 1px;
+  border-color: rgb(59, 106, 215);
+}
+
+.limpar {
+  display: inline-block;
+  padding: 10px 18px;
+  border: 1px solid rgb(59, 106, 215);
+  border-radius: 6px;
+  background: rgb(59, 106, 215);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.limpar:hover {
+  opacity: 0.85;
+  background-color: #1d4ed8;
+}
+
+.limpar + .limpar {
+  background: #fff;
+  color: rgb(59, 106, 215);
+}
+
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tabela th,
+.tabela td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabela th {
+  background: rgb(59, 106, 215);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tabela tbody tr:hover {
+  background: #f9fafb;
+}
+
+.tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vazio {
+  padding: 32px;
+  text-align: center;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.status {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.livre {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.reservado {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.ocupado {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.bloqueado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media (max-width: 640px) {
+  .filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .campo input,
+  .campo select {
+    min-width: 0;
+  }
+
+  .tabela {
+    display: block;
+    overflow-x: auto;
+  }
+}

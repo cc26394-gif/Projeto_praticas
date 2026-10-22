@@ -1,4 +1,3 @@
-
 import conectaBD from "../config/dbConnect.js";
 
 class Reserva {
@@ -15,12 +14,17 @@ class Reserva {
     static async buscarTodos() {
         try {
             const conexao = await conectaBD();
-            const result = await conexao.query("SELECT * FROM reserva");
+
+            const result = await conexao.query(
+                "SELECT * FROM reserva"
+            );
 
             return result.recordset;
 
         } catch (error) {
-            throw new Error(`Erro na consulta ao banco de dados: ${error.message}`);
+            throw new Error(
+                `Erro na consulta ao banco de dados: ${error.message}`
+            );
         }
     }
 
@@ -44,7 +48,9 @@ class Reserva {
             );
 
         } catch (error) {
-            throw new Error(`Erro na consulta ao banco de dados: ${error.message}`);
+            throw new Error(
+                `Erro na consulta ao banco de dados: ${error.message}`
+            );
         }
     }
 
@@ -59,11 +65,14 @@ class Reserva {
             return result;
 
         } catch (error) {
-            throw new Error(`Erro na remoção no banco de dados: ${error.message}`);
+            throw new Error(
+                `Erro na remoção no banco de dados: ${error.message}`
+            );
         }
     }
 
     static async inserirReserva(reserva) {
+
         const {
             recurso_cod,
             usuario_id,
@@ -75,13 +84,20 @@ class Reserva {
         try {
             const conexao = await conectaBD();
 
-            // Verifica se já existe uma reserva conflitante
+            const dataInicial = data_inicial
+                .replace("T", " ")
+                .replaceAll("-", "") + ":00";
+
+            const dataFinal = data_final
+                .replace("T", " ")
+                .replaceAll("-", "") + ":00";
+
             const conflito = await conexao.query(
                 `SELECT *
-                 FROM reserva
-                 WHERE recurso_cod = ${recurso_cod}
-                 AND data_inicial < '${data_final}'
-                 AND data_final > '${data_inicial}'`
+                FROM reserva
+                WHERE recurso_cod = ${recurso_cod}
+                AND data_inicial < '${dataFinal}'
+                AND data_final > '${dataInicial}'`
             );
 
             if (conflito.recordset.length > 0) {
@@ -95,7 +111,7 @@ class Reserva {
                 (recurso_cod, usuario_id, status_cod, data_inicial, data_final)
                 VALUES
                 (${recurso_cod}, ${usuario_id}, ${status_cod},
-                 '${data_inicial}', '${data_final}')`
+                '${dataInicial}', '${dataFinal}')`
             );
 
             return result;
@@ -108,6 +124,7 @@ class Reserva {
     }
 
     static async alterarReserva(reserva) {
+
         const {
             id,
             recurso_cod,
@@ -120,14 +137,16 @@ class Reserva {
         try {
             const conexao = await conectaBD();
 
-            // Verifica se existe outra reserva conflitante
+            const dataInicial = data_inicial.replace("T", " ") + ":00";
+            const dataFinal = data_final.replace("T", " ") + ":00";
+
             const conflito = await conexao.query(
                 `SELECT *
                  FROM reserva
                  WHERE recurso_cod = ${recurso_cod}
                  AND id <> ${id}
-                 AND data_inicial < '${data_final}'
-                 AND data_final > '${data_inicial}'`
+                 AND data_inicial < '${dataFinal}'
+                 AND data_final > '${dataInicial}'`
             );
 
             if (conflito.recordset.length > 0) {
@@ -141,8 +160,8 @@ class Reserva {
                  SET recurso_cod=${recurso_cod},
                      usuario_id=${usuario_id},
                      status_cod=${status_cod},
-                     data_inicial='${data_inicial}',
-                     data_final='${data_final}'
+                     data_inicial='${dataInicial}',
+                     data_final='${dataFinal}'
                  WHERE id=${id}`
             );
 

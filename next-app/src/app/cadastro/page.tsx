@@ -1,4 +1,6 @@
 "use client";
+
+import style from "../../styles/cadastro.module.css";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -43,14 +45,15 @@ export default function Cadastro() {
             setCelular("");
             setEmail("");
             setLogin("");
-            setSenha("")
+            setSenha("");
         } else {
             setMensagem(dados.message);
         }
     }
 
     return (
-        <>
+        <div className={style.main}>
+
             <h1>Criar usuário</h1>
 
             <form onSubmit={cadastrar}>
@@ -141,15 +144,24 @@ export default function Cadastro() {
                     onChange={(event) => setSenha(event.target.value)}
                     required
                 />
+
                 <br />
-                <button type="submit">
+                <br />
+
+                <button className={style.button} type="submit">
                     Cadastrar
                 </button>
+
                 <br />
-                <Link href="/login">voltar para a pagina inicial</Link>
+
+                <Link href="/login">
+                    voltar para a pagina inicial
+                </Link>
+
             </form>
 
             <p>{mensagem}</p>
-        </>
+
+        </div>
     );
 }

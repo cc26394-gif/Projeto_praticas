@@ -1,4 +1,5 @@
 import Usuario from "../models/Usuario.js";
+import Login from "../models/login.js";
 
 class usuarioController {
 
@@ -50,7 +51,13 @@ class usuarioController {
         try {
             console.log(req.body);
 
-            const result = await Usuario.inserirUsuario(req.body);
+            const usuario_id = await Usuario.inserirUsuario(req.body);
+
+            await Login.inserirLogin({
+                usuario_id: usuario_id,
+                login: req.body.login,
+                senha: req.body.senha
+            });
 
             res.status(201).json({
                 message: "Cadastrado com sucesso"

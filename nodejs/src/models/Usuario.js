@@ -39,6 +39,7 @@ class Usuario {
     static async buscarPorId(id) {
         try {
             const conexao = await conectaBD();
+
             const result = await conexao.query(
                 `SELECT * FROM cadastro_usuario WHERE id=${id}`
             );
@@ -64,6 +65,7 @@ class Usuario {
     static async removerUsuario(id) {
         try {
             const conexao = await conectaBD();
+
             const result = await conexao.query(
                 `DELETE FROM cadastro_usuario WHERE id=${id}`
             );
@@ -89,10 +91,11 @@ class Usuario {
             const result = await conexao.query(
                 `INSERT INTO cadastro_usuario 
                 (cpf, nome, nascimento, celular, email) 
+                OUTPUT INSERTED.id
                 VALUES ('${cpf}', '${nome}', '${nascimento}', '${celular}', '${email}')`
             );
 
-            return result;
+            return result.recordset[0].id;
 
         } catch (error) {
             throw new Error(`Erro na inserção no banco de dados: ${error.message}`);
@@ -134,3 +137,4 @@ class Usuario {
 }
 
 export default Usuario;
+

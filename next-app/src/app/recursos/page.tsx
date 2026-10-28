@@ -40,12 +40,19 @@ export default async function Recursos() {
                                 <strong>Local:</strong> {recurso.localidade}
                             </p>
 
-                            <Link className={style.botao} href={`/reserva/${recurso.codigo}`}>
+                            <Link
+                                className={style.botao}
+                                href={`/reserva/${recurso.codigo}`}
+                            >
                                 Reservar
                             </Link>
                         </div>
                     ))}
                 </div>
+
+                <Link className={style.botao} href="/cadastrodesala">
+                    Cadastrar sala
+                </Link>
             </main>
         </>
     );

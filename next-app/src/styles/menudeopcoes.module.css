@@ -27,9 +27,10 @@
   text-decoration: none;
   font-size: 1rem;
   white-space: nowrap;
+  border-radius: 5px;
 }
 .item:hover{
-    background-color: darkgreen;
+  
 }
 .wrapper {
   position: relative;

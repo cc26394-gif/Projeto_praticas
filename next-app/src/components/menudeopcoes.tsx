@@ -4,9 +4,9 @@ import style from "../styles/menudeopcoes.module.css";
 import { useState, useRef, useEffect } from "react";
 
 const opcoes = [
-    { texto: "por recurso", href: "/recurso" },
+    { texto: "por recurso", href: "/consultas/recurso" },
     { texto: "por usuario", href: "/consultas/usuario" },
-    { texto: "por data", href: "/data" },
+    { texto: "por data", href: "/consultas/data" },
 ];
 
 export default function Menudeopcoes() {

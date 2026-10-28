@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Cadastro() {
@@ -10,6 +10,8 @@ export default function Cadastro() {
     const [celular, setCelular] = useState("");
     const [email, setEmail] = useState("");
     const [mensagem, setMensagem] = useState("");
+    const [login, setLogin] = useState("");
+    const [senha, setSenha] = useState("");
 
     async function cadastrar(event: React.FormEvent) {
         event.preventDefault();
@@ -24,7 +26,9 @@ export default function Cadastro() {
                 nome,
                 nascimento,
                 celular,
-                email
+                email,
+                login,
+                senha
             })
         });
 
@@ -38,6 +42,8 @@ export default function Cadastro() {
             setNascimento("");
             setCelular("");
             setEmail("");
+            setLogin("");
+            setSenha("")
         } else {
             setMensagem(dados.message);
         }
@@ -113,10 +119,34 @@ export default function Cadastro() {
                 <br />
                 <br />
 
+                <label>Login:</label>
+                <br />
+
+                <input
+                    type="text"
+                    value={login}
+                    onChange={(event) => setLogin(event.target.value)}
+                    required
+                />
+
+                <br />
+                <br />
+
+                <label>Senha:</label>
+                <br />
+
+                <input
+                    type="password"
+                    value={senha}
+                    onChange={(event) => setSenha(event.target.value)}
+                    required
+                />
+                <br />
                 <button type="submit">
                     Cadastrar
                 </button>
-
+                <br />
+                <Link href="/login">voltar para a pagina inicial</Link>
             </form>
 
             <p>{mensagem}</p>

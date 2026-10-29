@@ -100,9 +100,8 @@ export default function ConsultaPorUsuario() {
             const dados: Reserva[] = await resposta.json();
 
             const reservasUsuario = dados.filter(
-                reserva => reserva.usuario_id === usuario.id
+                reserva => Number(reserva.usuario_id) === Number(usuario.id)
             );
-
             setReservas(reservasUsuario);
             setUsuarioSelecionado(usuario.nome);
 

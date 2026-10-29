@@ -96,12 +96,48 @@ export default function ConsultaPorRecurso() {
         }
     }
 
+    async function excluirReserva(id: number) {
+        const confirmar = window.confirm(
+            "Tem certeza que deseja excluir esta reserva?"
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        try {
+            const resposta = await fetch(`${API}/reserva/${id}`, {
+                method: "DELETE"
+            });
+
+            const resultado = await resposta.json();
+
+            if (!resposta.ok) {
+                setMensagem(
+                    resultado.message || "Não foi possível excluir a reserva."
+                );
+                return;
+            }
+
+            setReservas(
+                reservasAtuais =>
+                    reservasAtuais.filter(reserva => reserva.id !== id)
+            );
+
+            setMensagem("Reserva excluída com sucesso!");
+        } catch {
+            setMensagem("Não foi possível conectar ao servidor.");
+        }
+    }
+
     return (
         <>
             <Cabecalho />
 
             <main className={style.pagina}>
-                <h1 className={style.titulo}>Consultar Reservas por Recurso</h1>
+                <h1 className={style.titulo}>
+                    Consultar Reservas por Recurso
+                </h1>
 
                 <p className={style.subtitulo}>
                     Selecione uma sala ou laboratório para consultar suas reservas.
@@ -110,23 +146,34 @@ export default function ConsultaPorRecurso() {
                 <form onSubmit={buscarReservas} className={style.filtros}>
                     <label className={style.campo} htmlFor="recurso">
                         Recurso
+
                         <select
                             id="recurso"
                             value={recursoCodigo}
-                            onChange={(event) => setRecursoCodigo(event.target.value)}
+                            onChange={(event) =>
+                                setRecursoCodigo(event.target.value)
+                            }
                             required
                         >
-                            <option value="">Selecione um recurso</option>
+                            <option value="">
+                                Selecione um recurso
+                            </option>
 
                             {recursos.map((recurso) => (
-                                <option key={recurso.codigo} value={recurso.codigo}>
+                                <option
+                                    key={recurso.codigo}
+                                    value={recurso.codigo}
+                                >
                                     {recurso.nome} - Código {recurso.codigo}
                                 </option>
                             ))}
                         </select>
                     </label>
 
-                    <button type="submit" className={style.limpar}>
+                    <button
+                        type="submit"
+                        className={style.limpar}
+                    >
                         Buscar
                     </button>
                 </form>
@@ -151,6 +198,7 @@ export default function ConsultaPorRecurso() {
                                     <th>Data</th>
                                     <th>Horário</th>
                                     <th>Status</th>
+                                    <th>Ação</th>
                                 </tr>
                             </thead>
 
@@ -160,24 +208,43 @@ export default function ConsultaPorRecurso() {
                                         <td>
                                             {recursos.find(
                                                 (recurso) =>
-                                                    recurso.codigo === reserva.recurso_cod
+                                                    recurso.codigo ===
+                                                    reserva.recurso_cod
                                             )?.nome ?? reserva.recurso_cod}
                                         </td>
 
                                         <td>
-                                            {formatarData(reserva.data_inicial)}
+                                            {formatarData(
+                                                reserva.data_inicial
+                                            )}
                                         </td>
 
                                         <td>
-                                            {formatarHora(reserva.data_inicial)}
+                                            {formatarHora(
+                                                reserva.data_inicial
+                                            )}
                                             {" às "}
-                                            {formatarHora(reserva.data_final)}
+                                            {formatarHora(
+                                                reserva.data_final
+                                            )}
                                         </td>
 
                                         <td>
                                             {reserva.status_cod === 4
                                                 ? "Reservado"
                                                 : reserva.status_cod}
+                                        </td>
+
+                                        <td>
+                                            <button
+                                                type="button"
+                                                className={style.limpar}
+                                                onClick={() =>
+                                                    excluirReserva(reserva.id)
+                                                }
+                                            >
+                                                Excluir
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

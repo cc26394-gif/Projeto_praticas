@@ -17,7 +17,6 @@ interface DadosDosRecursos {
 const statusDisponiveis = [
     "Livre",
     "Ocupado",
-    "Em manutenção",
     "Reservado"
 ];
 
@@ -110,6 +109,45 @@ export default function Recursos() {
         }
     }
 
+    async function removerRecurso(codigo: number) {
+        const confirmar = window.confirm(
+            "Tem certeza que deseja remover esta sala?"
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `http://localhost:8080/recurso/${codigo}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const resultado = await response.json();
+
+            if (!response.ok) {
+                setMensagens({
+                    ...mensagens,
+                    [codigo]: resultado.message || "Não foi possível remover a sala."
+                });
+                return;
+            }
+
+            setDados(dadosAtuais =>
+                dadosAtuais.filter(recurso => recurso.codigo !== codigo)
+            );
+
+        } catch {
+            setMensagens({
+                ...mensagens,
+                [codigo]: "Não foi possível conectar ao servidor."
+            });
+        }
+    }
+
     return (
         <>
             <Cabecalho />
@@ -148,7 +186,8 @@ export default function Recursos() {
                             </p>
 
                             <p>
-                                <strong>Status atual:</strong> {recurso.status || "Não informado"}
+                                <strong>Status atual:</strong>{" "}
+                                {recurso.status || "Não informado"}
                             </p>
 
                             <Link
@@ -165,6 +204,14 @@ export default function Recursos() {
                                     onClick={() => alterarStatus(recurso.codigo)}
                                 >
                                     Alterar status
+                                </button>
+
+                                <button
+                                    className={style.botao}
+                                    type="button"
+                                    onClick={() => removerRecurso(recurso.codigo)}
+                                >
+                                    Remover a sala
                                 </button>
 
                                 <select

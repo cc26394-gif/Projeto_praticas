@@ -15,6 +15,16 @@ interface Reserva {
     data_final: string;
 }
 
+interface Usuario {
+    id: number;
+    nome: string;
+}
+
+interface Recurso {
+    codigo: number;
+    nome: string;
+}
+
 function formatarData(iso: string) {
     return new Date(iso).toLocaleDateString("pt-BR", {
         timeZone: "UTC"
@@ -30,55 +40,117 @@ function formatarHora(iso: string) {
 }
 
 export default function ConsultaPorUsuario() {
+    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [reservas, setReservas] = useState<Reserva[]>([]);
+    const [recursos, setRecursos] = useState<Recurso[]>([]);
+    const [nomeUsuario, setNomeUsuario] = useState("");
+    const [usuarioSelecionado, setUsuarioSelecionado] = useState("");
     const [mensagem, setMensagem] = useState("");
 
     useEffect(() => {
-        async function buscarReservas() {
-            const usuarioId = localStorage.getItem("usuario_id");
-
-            if (!usuarioId) {
-                setMensagem("Você precisa estar logado.");
-                return;
-            }
-
+        async function buscarDados() {
             try {
-                const response = await fetch(`${API}/reserva`);
+                const respostaUsuarios = await fetch(`${API}/usuario`);
+                const respostaRecursos = await fetch(`${API}/recurso`);
 
-                if (!response.ok) {
-                    throw new Error("Erro ao buscar reservas.");
+                if (!respostaUsuarios.ok || !respostaRecursos.ok) {
+                    throw new Error("Erro ao buscar dados.");
                 }
 
-                const dados: Reserva[] = await response.json();
+                const dadosUsuarios: Usuario[] = await respostaUsuarios.json();
+                const dadosRecursos: Recurso[] = await respostaRecursos.json();
 
-                const minhasReservas = dados.filter(
-                    (reserva) => reserva.usuario_id === Number(usuarioId)
-                );
-
-                setReservas(minhasReservas);
+                setUsuarios(dadosUsuarios);
+                setRecursos(dadosRecursos);
             } catch {
-                setMensagem("Não foi possível carregar suas reservas.");
+                setMensagem("Não foi possível carregar os usuários ou recursos.");
             }
         }
 
-        buscarReservas();
+        buscarDados();
     }, []);
+
+    async function buscarReservas() {
+        setMensagem("");
+        setReservas([]);
+        setUsuarioSelecionado("");
+
+        if (nomeUsuario.trim() === "") {
+            setMensagem("Digite o nome do usuário.");
+            return;
+        }
+
+        const usuario = usuarios.find(
+            usuario =>
+                usuario.nome.toLowerCase() === nomeUsuario.trim().toLowerCase()
+        );
+
+        if (!usuario) {
+            setMensagem("Nenhum usuário encontrado com esse nome.");
+            return;
+        }
+
+        try {
+            const resposta = await fetch(`${API}/reserva`);
+
+            if (!resposta.ok) {
+                throw new Error("Erro ao buscar reservas.");
+            }
+
+            const dados: Reserva[] = await resposta.json();
+
+            const reservasUsuario = dados.filter(
+                reserva => reserva.usuario_id === usuario.id
+            );
+
+            setReservas(reservasUsuario);
+            setUsuarioSelecionado(usuario.nome);
+
+            if (reservasUsuario.length === 0) {
+                setMensagem("Esse usuário ainda não possui reservas.");
+            }
+        } catch {
+            setMensagem("Não foi possível carregar as reservas.");
+        }
+    }
 
     return (
         <>
             <Cabecalho />
 
             <main className={style.pagina}>
-                <h1 className={style.titulo}>Minhas Reservas</h1>
+                <h1 className={style.titulo}>
+                    Consultar Reservas por Usuário
+                </h1>
+
+                <div className={style.filtros}>
+                    <div className={style.campo}>
+                        <label>Nome do usuário</label>
+                        <input
+                            type="text"
+                            placeholder="Digite o nome do usuário"
+                            value={nomeUsuario}
+                            onChange={e => setNomeUsuario(e.target.value)}
+                        />
+                    </div>
+
+                    <button
+                        type="button"
+                        className={style.limpar}
+                        onClick={buscarReservas}
+                    >
+                        Buscar
+                    </button>
+                </div>
+
+                {usuarioSelecionado && (
+                    <p className={style.subtitulo}>
+                        Reservas de {usuarioSelecionado}
+                    </p>
+                )}
 
                 {mensagem && (
                     <p className={style.vazio}>{mensagem}</p>
-                )}
-
-                {!mensagem && reservas.length === 0 && (
-                    <p className={style.vazio}>
-                        Você ainda não possui reservas.
-                    </p>
                 )}
 
                 {reservas.length > 0 && (
@@ -101,27 +173,34 @@ export default function ConsultaPorUsuario() {
                             </thead>
 
                             <tbody>
-                                {reservas.map((reserva) => (
-                                    <tr key={reserva.id}>
-                                        <td>{reserva.recurso_cod}</td>
+                                {reservas.map(reserva => {
+                                    const recurso = recursos.find(
+                                        item => item.codigo === reserva.recurso_cod
+                                    );
 
-                                        <td>
-                                            {formatarData(reserva.data_inicial)}
-                                        </td>
-
-                                        <td>
-                                            {formatarHora(reserva.data_inicial)}
-                                            {" às "}
-                                            {formatarHora(reserva.data_final)}
-                                        </td>
-
-                                        <td>
-                                            {reserva.status_cod === 4
-                                                ? "Reservado"
-                                                : reserva.status_cod}
-                                        </td>
-                                    </tr>
-                                ))}
+                                    return (
+                                        <tr key={reserva.id}>
+                                            <td>
+                                                {recurso
+                                                    ? recurso.nome
+                                                    : `Recurso ${reserva.recurso_cod}`}
+                                            </td>
+                                            <td>
+                                                {formatarData(reserva.data_inicial)}
+                                            </td>
+                                            <td>
+                                                {formatarHora(reserva.data_inicial)}
+                                                {" às "}
+                                                {formatarHora(reserva.data_final)}
+                                            </td>
+                                            <td>
+                                                {reserva.status_cod === 4
+                                                    ? "Reservado"
+                                                    : reserva.status_cod}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </>

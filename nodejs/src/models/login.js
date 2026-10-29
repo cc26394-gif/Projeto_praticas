@@ -105,16 +105,26 @@ class Login {
         }
     }
 
-    static async autenticar(login, senha) {
+   static async autenticar(login, senha) {
         try {
             const conexao = await conectaBD();
 
             const result = await conexao.query(
                 `SELECT id, usuario_id, login
-                 FROM login_no_sistema
-                 WHERE login='${login}'
-                 AND senha='${senha}'`
+                FROM login_no_sistema
+                WHERE login='${login}'
+                AND senha='${senha}'`
             );
+
+            if (result.recordset.length > 0) {
+                const usuarioId = result.recordset[0].usuario_id;
+
+                await conexao.query(
+                    `UPDATE cadastro_usuario
+                    SET data_acesso = GETDATE()
+                    WHERE id = ${usuarioId}`
+                );
+            }
 
             return result.recordset;
 

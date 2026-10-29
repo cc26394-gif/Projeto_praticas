@@ -1,6 +1,6 @@
 
-import express from 'express';
-import recursoController from '../controllers/recursoController.js';
+import express from "express";
+import recursoController from "../controllers/recursoController.js";
 
 const routes = express.Router();
 

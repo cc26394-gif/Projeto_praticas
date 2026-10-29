@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, type FormEvent } from "react";
 import style from "../../../styles/consulta.module.css";
 import Cabecalho from "@/components/Cabecalho";
 
@@ -15,14 +15,19 @@ interface Reserva {
     data_final: string;
 }
 
-function formatarData(iso: string) {
-    return new Date(iso).toLocaleDateString("pt-BR", {
+interface Recurso {
+    codigo: number;
+    nome: string;
+}
+
+function formatarData(data: string) {
+    return new Date(data).toLocaleDateString("pt-BR", {
         timeZone: "UTC"
     });
 }
 
-function formatarHora(iso: string) {
-    return new Date(iso).toLocaleTimeString("pt-BR", {
+function formatarHora(data: string) {
+    return new Date(data).toLocaleTimeString("pt-BR", {
         timeZone: "UTC",
         hour: "2-digit",
         minute: "2-digit"
@@ -31,11 +36,12 @@ function formatarHora(iso: string) {
 
 export default function ConsultaPorData() {
     const [reservas, setReservas] = useState<Reserva[]>([]);
+    const [recursos, setRecursos] = useState<Recurso[]>([]);
     const [data, setData] = useState("");
     const [reservasEncontradas, setReservasEncontradas] = useState(false);
     const [mensagem, setMensagem] = useState("");
 
-    async function buscarReservas(event: React.FormEvent) {
+    async function buscarReservas(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         setMensagem("");
@@ -55,15 +61,19 @@ export default function ConsultaPorData() {
         }
 
         try {
-            const response = await fetch(`${API}/reserva`);
+            const respostaReservas = await fetch(`${API}/reserva`);
+            const respostaRecursos = await fetch(`${API}/recurso`);
 
-            if (!response.ok) {
-                throw new Error("Erro ao buscar reservas.");
+            if (!respostaReservas.ok || !respostaRecursos.ok) {
+                throw new Error("Erro ao buscar dados.");
             }
 
-            const dados: Reserva[] = await response.json();
+            const dadosReservas: Reserva[] = await respostaReservas.json();
+            const dadosRecursos: Recurso[] = await respostaRecursos.json();
 
-            const minhasReservas = dados.filter((reserva) => {
+            setRecursos(dadosRecursos);
+
+            const minhasReservas = dadosReservas.filter((reserva) => {
                 const dataReserva = new Date(reserva.data_inicial)
                     .toLocaleDateString("en-CA", {
                         timeZone: "UTC"
@@ -80,7 +90,7 @@ export default function ConsultaPorData() {
                 setMensagem("Você não possui reservas nessa data.");
             }
         } catch {
-            setMensagem("Não foi possível carregar suas reservas.");
+            setMensagem("Não foi possível carregar as reservas.");
         }
     }
 
@@ -89,7 +99,9 @@ export default function ConsultaPorData() {
             <Cabecalho />
 
             <main className={style.pagina}>
-                <h1 className={style.titulo}>Consultar Reservas por Data</h1>
+                <h1 className={style.titulo}>
+                    Consultar Reservas por Data
+                </h1>
 
                 <p className={style.subtitulo}>
                     Selecione uma data para consultar suas reservas.
@@ -138,13 +150,23 @@ export default function ConsultaPorData() {
                             <tbody>
                                 {reservas.map((reserva) => (
                                     <tr key={reserva.id}>
-                                        <td>{reserva.recurso_cod}</td>
-                                        <td>{formatarData(reserva.data_inicial)}</td>
+                                        <td>
+                                            {recursos.find(
+                                                (recurso) =>
+                                                    recurso.codigo === reserva.recurso_cod
+                                            )?.nome ?? reserva.recurso_cod}
+                                        </td>
+
+                                        <td>
+                                            {formatarData(reserva.data_inicial)}
+                                        </td>
+
                                         <td>
                                             {formatarHora(reserva.data_inicial)}
                                             {" às "}
                                             {formatarHora(reserva.data_final)}
                                         </td>
+
                                         <td>
                                             {reserva.status_cod === 4
                                                 ? "Reservado"

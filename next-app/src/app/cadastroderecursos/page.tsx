@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import style from "../../styles/cadastrodesala.module.css";
 
-export default function CadastroDeSala() {
+export default function CadastroDeRecursos() {
 
     const [codigo, setCodigo] = useState("");
     const [nome, setNome] = useState("");
@@ -24,7 +24,7 @@ export default function CadastroDeSala() {
                 },
                 body: JSON.stringify({
                     codigo: Number(codigo),
-                    nome,
+                    nome,   
                     tipo,
                     capacidade: Number(capacidade),
                     localidade

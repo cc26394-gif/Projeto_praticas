@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ interface Recurso {
     tipo: string;
     capacidade: number;
     localidade: string;
+    status?: string;
 }
 
 const horarios = [
@@ -32,19 +34,60 @@ export default function Reserva() {
     const [data, setData] = useState("");
     const [horario, setHorario] = useState("");
     const [mensagem, setMensagem] = useState("");
+    const [carregando, setCarregando] = useState(true);
 
     useEffect(() => {
         async function buscarRecurso() {
-            const resposta = await fetch(`http://localhost:8080/recurso/${codigo}`);
-            const dados = await resposta.json();
-            setRecurso(dados[0]);
+            setCarregando(true);
+
+            try {
+                const resposta = await fetch(`http://localhost:8080/recurso/${codigo}`);
+
+                if (!resposta.ok) {
+                    setRecurso(null);
+                    setMensagem("Não foi possível encontrar esse recurso.");
+                    return;
+                }
+
+                const dados = await resposta.json();
+                const recursoEncontrado = Array.isArray(dados) ? dados[0] : dados;
+
+                if (!recursoEncontrado) {
+                    setRecurso(null);
+                    setMensagem("Não foi possível encontrar esse recurso.");
+                    return;
+                }
+
+                setRecurso(recursoEncontrado);
+                setMensagem("");
+            } catch {
+                setRecurso(null);
+                setMensagem("Não foi possível carregar os dados do recurso.");
+            } finally {
+                setCarregando(false);
+            }
         }
 
         buscarRecurso();
     }, [codigo]);
 
-    async function reservar(event: React.FormEvent) {
+    const status = recurso?.status?.trim();
+    const disponivel = status?.toLowerCase() === "livre";
+    const indisponivel = !disponivel;
+
+    async function reservar(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setMensagem("");
+
+        if (!recurso) {
+            setMensagem("Não foi possível carregar o recurso.");
+            return;
+        }
+
+        if (!disponivel) {
+            setMensagem("Este recurso não está disponível para reserva.");
+            return;
+        }
 
         const usuarioId = localStorage.getItem("usuario_id");
 
@@ -65,29 +108,54 @@ export default function Reserva() {
             return;
         }
 
-        const dataInicial = `${data}T${horarioEscolhido.inicio}`;
-        const dataFinal = `${data}T${horarioEscolhido.fim}`;
+        const agora = new Date();
 
-        const resposta = await fetch("http://localhost:8080/reserva", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                recurso_cod: Number(codigo),
-                usuario_id: Number(usuarioId),
-                status_cod: 4,
-                data_inicial: dataInicial,
-                data_final: dataFinal
-            })
-        });
+        const ano = agora.getFullYear();
+        const mes = String(agora.getMonth() + 1).padStart(2, "0");
+        const dia = String(agora.getDate()).padStart(2, "0");
+        const dataAtual = `${ano}-${mes}-${dia}`;
 
-        const dados = await resposta.json();
+        if (data < dataAtual) {
+            setMensagem("Não é possível reservar em uma data passada.");
+            return;
+        }
 
-        if (resposta.ok) {
-            setMensagem("Reserva realizada com sucesso!");
-        } else {
-            setMensagem(dados.message || "Não foi possível realizar a reserva.");
+        const horarioAtual = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
+
+        if (data === dataAtual && horarioEscolhido.inicio <= horarioAtual) {
+            setMensagem("Esse horário já passou. Escolha outro horário.");
+            return;
+        }
+
+        const dataInicial = `${data}T${horarioEscolhido.inicio}:00`;
+        const dataFinal = `${data}T${horarioEscolhido.fim}:00`;
+
+        try {
+            const resposta = await fetch("http://localhost:8080/reserva", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    recurso_cod: Number(codigo),
+                    usuario_id: Number(usuarioId),
+                    status_cod: 4,
+                    data_inicial: dataInicial,
+                    data_final: dataFinal
+                })
+            });
+
+            const dados = await resposta.json();
+
+            if (resposta.ok) {
+                setMensagem("Reserva realizada com sucesso!");
+                setData("");
+                setHorario("");
+            } else {
+                setMensagem(dados.message || "Não foi possível realizar a reserva.");
+            }
+        } catch {
+            setMensagem("Não foi possível conectar ao servidor.");
         }
     }
 
@@ -96,50 +164,102 @@ export default function Reserva() {
             <Cabecalho />
 
             <main className={style.container}>
-                <h1 className={style.titulo}>Reserva</h1>
+                <h1 className={style.titulo}>Reserva de recurso</h1>
 
-                {recurso && (
+                {carregando && <p>Carregando recurso...</p>}
+
+                {!carregando && recurso && (
                     <div className={style.recurso}>
                         <h2>{recurso.nome}</h2>
 
                         <p><strong>Código:</strong> {recurso.codigo}</p>
-
                         <p>
                             <strong>Tipo:</strong>{" "}
                             {recurso.tipo === "S" ? "Sala" : "Laboratório"}
                         </p>
-
                         <p><strong>Capacidade:</strong> {recurso.capacidade} pessoas</p>
-
                         <p><strong>Local:</strong> {recurso.localidade}</p>
+
+                        <p>
+                            <strong>Status:</strong>{" "}
+                            {status ? (
+                                <span className={disponivel ? style.statusLivre : style.statusIndisponivel}>
+                                    {status}
+                                </span>
+                            ) : (
+                                <span className={style.statusDesconhecido}>
+                                    Não informado
+                                </span>
+                            )}
+                        </p>
                     </div>
                 )}
 
-                <div className={style.formulario}>
-                    <h2>Escolha o período</h2>
+                {!carregando && recurso && (
+                    <div className={style.formulario}>
+                        <h2>Escolha o período</h2>
 
-                    <form onSubmit={reservar}>
-                        <label htmlFor="data">Data:</label>
+                        {indisponivel ? (
+                            <p className={style.aviso}>
+                                {status
+                                    ? `Este recurso está com status "${status}" e não pode ser reservado.`
+                                    : "Não foi possível confirmar o status deste recurso. A reserva está bloqueada."}
+                            </p>
+                        ) : (
+                            <form onSubmit={reservar}>
+                                <label htmlFor="data">Data:</label>
 
-                        <input id="data" type="date" value={data} onChange={(event) => setData(event.target.value)} required />
+                                <input
+                                    id="data"
+                                    type="date"
+                                    value={data}
+                                    min={(() => {
+                                        const hoje = new Date();
+                                        const ano = hoje.getFullYear();
+                                        const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+                                        const dia = String(hoje.getDate()).padStart(2, "0");
+                                        return `${ano}-${mes}-${dia}`;
+                                    })()}
+                                    onChange={event => {
+                                        setData(event.target.value);
+                                        setMensagem("");
+                                    }}
+                                    required
+                                />
 
-                        <label htmlFor="horario">Horário:</label>
+                                <label htmlFor="horario">Horário:</label>
 
-                        <select id="horario" value={horario} onChange={(event) => setHorario(event.target.value)} required>
-                            <option value="">Selecione um horário</option>
+                                <select
+                                    id="horario"
+                                    value={horario}
+                                    onChange={event => {
+                                        setHorario(event.target.value);
+                                        setMensagem("");
+                                    }}
+                                    required
+                                >
+                                    <option value="">Selecione um horário</option>
 
-                            {horarios.map((item) => (
-                                <option key={item.inicio} value={item.inicio}>
-                                    {item.nome} — {item.inicio} às {item.fim}
-                                </option>
-                            ))}
-                        </select>
+                                    {horarios.map(item => (
+                                        <option key={item.inicio} value={item.inicio}>
+                                            {item.nome} — {item.inicio} às {item.fim}
+                                        </option>
+                                    ))}
+                                </select>
 
-                        <button type="submit">Confirmar reserva</button>
-                    </form>
+                                <button className={style.botaoReservar} type="submit">
+                                    Confirmar reserva
+                                </button>
+                            </form>
+                        )}
 
+                        {mensagem && <p className={style.mensagem}>{mensagem}</p>}
+                    </div>
+                )}
+
+                {!carregando && !recurso && mensagem && (
                     <p className={style.mensagem}>{mensagem}</p>
-                </div>
+                )}
             </main>
         </>
     );

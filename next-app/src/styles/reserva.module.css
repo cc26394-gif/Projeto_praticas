@@ -31,16 +31,60 @@
     flex-direction: column;
 }
 
-.formulario input {
+.formulario input,
+.formulario select {
     padding: 8px;
     margin: 5px 0 15px;
 }
 
 .formulario button {
     padding: 10px;
+    margin-top: 5px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
     cursor: pointer;
+}
+
+.formulario button:hover {
+    background-color: #1d4ed8;
 }
 
 .mensagem {
     margin-top: 20px;
+}
+
+.statusLivre {
+    color: #166534;
+    background-color: #dcfce7;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.statusIndisponivel {
+    color: #991b1b;
+    background-color: #fee2e2;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.statusDesconhecido {
+    color: #92400e;
+    background-color: #fef3c7;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.aviso {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-radius: 6px;
 }
